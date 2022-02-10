@@ -6,7 +6,7 @@
 /*   By: ntitan <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/04 19:19:38 by ntitan            #+#    #+#             */
-/*   Updated: 2022/02/10 17:58:41 by ntitan           ###   ########.fr       */
+/*   Updated: 2022/02/10 18:35:36 by ntitan           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -129,6 +129,7 @@ void sort_from3TO5(t_data *data)
 	while (data->size_a > 3)
 		pb(data);
 	sort3_forA(data);
+	write(1, "\n", 1);
 	while (data->size_b > 0)
 	{
 		if (*data->b_head < *data->a_root)
@@ -176,6 +177,8 @@ void	pb(t_data *data)
 
 void	pa(t_data *data)
 {
+	if (data->size_b == 0)
+		return ;
 	if (data->size_b < 1)
 		return ;
 	if (data->a_head + 1 > &data->a[data->size_a - 1] && data->a_root > data->a)
@@ -199,6 +202,8 @@ void	pa(t_data *data)
 
 void	rb(t_data *data)
 {
+	if (data->size_b == 0)
+		return ;
 	data->b_root = data->b_head;
 	if (data->b_head - 1 < data->b)
 		data->b_head = &data->b[data->size_b - 1];
@@ -209,6 +214,8 @@ void	rb(t_data *data)
 
 void	ra(t_data *data)
 {
+	if (data->size_a == 0)
+		return ;
 	data->a_root = data->a_head;
 	if (data->a_head - 1 < data->a)
 		data->a_head = &data->a[data->size_a - 1];
@@ -219,6 +226,8 @@ void	ra(t_data *data)
 
 void	rrb(t_data *data)
 {
+	if (data->size_b == 0)
+		return ;
 	data->b_head = data->b_root;
 	if (data->b_root + 1 > &data->b[data->size_b - 1])
 		data->b_root = data->b;
@@ -239,10 +248,12 @@ void	rra(t_data *data)
 
 void	sb(t_data *data)
 {
+	if (data->size_b == 0)
+		return ;
 	int	buff;
 
 	buff = *data->b_head;
-	if (data->b_head - 1 < data->b)
+	if (data->b_head == data->b)
 	{
 		*data->b_head = data->b[data->size_b - 1];
 		data->b[data->size_b - 1] = buff;
@@ -257,6 +268,8 @@ void	sb(t_data *data)
 
 void	sa(t_data *data)
 {
+	if (data->size_a == 0)
+		return ;
 	int buff;
 
 	buff = *data->a_head;
