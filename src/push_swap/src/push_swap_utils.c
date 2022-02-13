@@ -6,7 +6,7 @@
 /*   By: ntitan <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/04 19:19:38 by ntitan            #+#    #+#             */
-/*   Updated: 2022/02/10 18:35:36 by ntitan           ###   ########.fr       */
+/*   Updated: 2022/02/14 00:27:05 by ntitan           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,30 +20,57 @@ void	back_a(t_data *data)
 		pa(data);
 }
 
-void	check_b(t_data *data, int num)
+int    ft_max(int *mas, int size)
 {
-	int i;
+    int max;
+    int i;
 
-	i = data->size_b - 1;
-	while (i >= 0)
-	{
-		if (data->b[i] > num)
-			break;
-		i--;
-	}
-	i = data->size_b - 1 - i;
-	if (i > data->size_b / 2)
-	{
-		i = data->size_b - i + 1;
-		while (i--)
-			rrb(data);
-	}
-	else
-		while (i--)
-			rb(data);
+    max = 0;
+    i = 0;
+    while (i < size)
+    {
+        if (mas[max] < mas[i])
+            max = i;
+        i++;
+    }
+    return (max);
 }
 
-int		*find_nums(t_data *data, int headChunk)
+void	check_b(t_data *data, int num) {
+    int i;
+    int buf;
+
+    i = 0;
+    while (i < data->size_b) {
+        if (data->b[i] > num)
+            break;
+        i++;
+    }
+    if (i >= data->size_b / 2 && i != data->size_b)
+    {
+        buf = (i - data->size_b) * (-1);
+        while (buf--)
+            rb(data);
+    }
+    else if (i != data->size_b)
+        while (i--)
+            rrb(data);
+    else if (i == data->size_b)
+    {
+        i = ft_max(data->b, data->size_b);
+        if (i >= data->size_b / 2  && i != 0)
+        {
+            buf = (i - data->size_b) * (-1);
+            while (buf--)
+                rb(data);
+        }
+        else if (i != 0)
+            while (i--)
+                rrb(data);
+    }
+}
+
+int		*find_nums(t_data *data, int headChunk, int numsofchunks)
 {
 	int i;
 	int	*hold;
@@ -59,28 +86,32 @@ int		*find_nums(t_data *data, int headChunk)
 
 	while (i < data->size_a)
 	{
-		if (data->a[data->size_a - i - 1] <= size / 5 * headChunk 
-			&& data->a[data->size_a - i - 1] > size / 5 * (headChunk - 1))
+		if (data->a[data->size_a - i - 1] <= size / numsofchunks * headChunk
+			&& data->a[data->size_a - i - 1] > size / numsofchunks * (headChunk - 1)
+            && hold[0] == -1)
 			hold[0] = i;
-		if (data->a[i] <= size / 5 * headChunk
-			&& data->a[i] > size  / 5 * (headChunk - 1))
+		if (data->a[i] <= size / numsofchunks * headChunk
+			&& data->a[i] > size  / numsofchunks * (headChunk - 1)
+            && hold[1] == -1)
 			hold[1] = i + 1;
 		i++;
+        if (hold[0] > -1 && hold[1] > - 1)
+            break ;
 	}
 	return (hold);
 }
 
 void	sort_all(t_data *data)
 {
-	int	numsOfChunks;
+	int	numsofchunks;
 	int	*hold;
 	int	headChunk;
 
-	numsOfChunks = (data->size_a + data->size_b) / 3;
+	numsofchunks = (data->size_a + data->size_b) / 3;
 	headChunk = 1;
-	while (headChunk <= numsOfChunks)
+	while (headChunk <= numsofchunks)
 	{
-		hold = find_nums(data, headChunk);
+		hold = find_nums(data, headChunk, numsofchunks);
 		if (data->a[data->size_a - hold[0] - 1] == data->a[hold[1] - 1])
 			headChunk++;
 		if (hold[0] <= hold[1])
@@ -98,6 +129,8 @@ void	sort_all(t_data *data)
 
 void	sort3_forA(t_data *data)
 {
+    if (*data->a_head < *(data->a_head - 1) && *data->a_root > *(data->a_head - 1))
+        return ;
 	if (*data->a_head > *(data->a_head - 1))
 	{
 		if (*(data->a_head - 1) > *data->a_root)
@@ -129,7 +162,7 @@ void sort_from3TO5(t_data *data)
 	while (data->size_a > 3)
 		pb(data);
 	sort3_forA(data);
-	write(1, "\n", 1);
+	//write(1, "\n", 1);
 	while (data->size_b > 0)
 	{
 		if (*data->b_head < *data->a_root)
@@ -147,24 +180,85 @@ void sort_from3TO5(t_data *data)
 		}
 	}
 	i = 0;
-	while (i <= data->size_a)
+	while (i < data->size_a)
 		printf("%d\n", data->a[i++]);
 }
 
+void	shift_topush(t_data *data, int choose)
+{
+	int *i;
+	int	b;
+    int c;
+	if (!data->b_head || !data->b_root)
+        return ;
+	if (choose == 1 && (data->size_a + data->size_b) > data->size_b)
+	{
+		i = data->b_head + 1;
+		b = *i;
+		while (i <= &data->b[data->size_b - 1])
+		{
+			b = *(i + 1);
+			*(i + 1) = *i;
+			i++;
+		}
+		if (data->b_root == &data->b[data->size_b - 1])
+			data->b_root = data->b;
+		else
+			data->b_root++;
+        data->size_b++;
+	}
+	else if (choose == 0 && (data->size_a + data->size_b) > data->size_a)
+	{
+		i = data->a_head + 1;
+        b = *i;
+		while (i <= &data->a[data->size_a - 1])
+        {
+            c = *i;
+
+		}
+		if (data->a_root == &data->a[data->size_a - 1])
+			data->a_root = data->a;
+		else
+			data->a_root++;
+        data->size_a++;
+	}
+}
 
 void	pb(t_data *data)
 {
+    if (data->size_a < 1)
+        return ;
+    if (!data->b_head || !data->b_root)
+    {
+        data->b_head = data->b;
+        *data->b = *(data->a_head);
+        data->b_root = data->b;
+    }
+    else
+    {
+        *(data->b_head + 1) = *data->a_head;
+        *data->b_head++;
+    }
+    data->size_b++;
+    data->size_a--;
+    data->a_head--;
+    write(1, "pb\n", 3);
+    /*int size;
+
+    size = data->size_a+ data->size_b;
+	//shift_topush(data, 1);
 	if (data->size_a < 1)
 		return ;
-	if (data->b_head == &data->b[data->size_b - 1] && data->b_root > data->b)
+	if (data->b_head == &data->b[size - 1] )
 	{
 		data->b[0] = *data->a_head;
 		data->b_head = &data->b[0];
 	}
-	else
+	else if (data->b_head == NULL)
 	{
-		*(data->b_head + 1) = *data->a_head;
-		data->b_head += 1;
+		*(data->b) = *data->a_head;
+		data->b_head = data->b;
+        data->b_root = data->b;
 	}
 	data->size_b++;
 	if (data->a_head == data->a)
@@ -172,16 +266,23 @@ void	pb(t_data *data)
 	else
 		data->a_head--;
 	data->size_a--;
-	write(1, "pb\n", 3);   
+	write(1, "pb\n", 3);*/
 }
 
 void	pa(t_data *data)
 {
-	if (data->size_b == 0)
+    if (data->size_b < 1)
+        return ;
+    *(data->a_head + 1) = *data->b_head;
+    data->a_head++;
+    data->size_a++;
+    data->size_b--;
+    data->b_head--;
+    write(1, "pa\n", 3);
+	/*if (data->size_b < 1)
 		return ;
-	if (data->size_b < 1)
-		return ;
-	if (data->a_head + 1 > &data->a[data->size_a - 1] && data->a_root > data->a)
+	//shift_topush(data, 0);
+	if (data->a_head + 1 > &data->a[data->size_a - 1])
 	{
 		data->a[0] = *data->b_head;
 		data->a_head = &data->a[0];
@@ -197,53 +298,115 @@ void	pa(t_data *data)
 	else
 		data->b_head = data->b_head - 1;
 	data->size_b--;
-	write(1, "pa\n", 3);
+	write(1, "pa\n", 3);*/
 }
 
 void	rb(t_data *data)
 {
+	int	last;
+	int	buff;
+	int	*cur;
+
 	if (data->size_b == 0)
+		return ;
+	last = data->b[0];
+	cur  = data->b;
+	while (cur <= data->b_head)
+	{
+		buff = *cur;
+		*cur = last;
+		last = buff;
+        cur++;
+	}
+	data->b[0] = last;
+    write(1, "rb\n", 3);
+	/*if (data->size_b == 0)
 		return ;
 	data->b_root = data->b_head;
 	if (data->b_head - 1 < data->b)
 		data->b_head = &data->b[data->size_b - 1];
 	else
 		data->b_head = data->b_head - 1;
-	write(1, "rb\n", 3);
+	write(1, "rb\n", 3);*/
 }
 
 void	ra(t_data *data)
 {
-	if (data->size_a == 0)
+	int	last;
+	int	*cur;
+	int	buff;
+
+	cur = data->a;
+	last = data->a[0];
+	while (cur <= data->a_head)
+	{
+		buff = *cur;
+		*cur = last;
+		last = buff;
+        cur++;
+	}
+	data->a[0] = last;
+    write(1, "ra\n", 3);
+	/*if (data->size_a == 0)
 		return ;
 	data->a_root = data->a_head;
 	if (data->a_head - 1 < data->a)
 		data->a_head = &data->a[data->size_a - 1];
 	else
 		data->a_head = data->a_head - 1;
-	write(1, "ra\n", 3);
+	write(1, "ra\n", 3);*/
 }
 
 void	rrb(t_data *data)
 {
-	if (data->size_b == 0)
+    int last;
+    int *cur;
+    int buff;
+
+    cur = data->b_head;
+    last = *data->b_head;
+    while (cur >= data->b)
+    {
+        buff = *cur;
+        *cur = last;
+        last  = buff;
+        cur--;
+    }
+    *data->b_head = last;
+    write(1, "rrb\b", 4);
+	/*if (data->size_b == 0)
 		return ;
 	data->b_head = data->b_root;
 	if (data->b_root + 1 > &data->b[data->size_b - 1])
 		data->b_root = data->b;
 	else
 		data->b_root = data->b_root + 1;
-	write(1, "rrb\n" , 4);
+	write(1, "rrb\n" , 4);*/
 }
 
 void	rra(t_data *data)
 {
-	data->a_head = data->a_root;
+    int last;
+    int *cur;
+    int buff;
+
+    cur = data->a_head;
+    last = *data->a_head;
+    while (cur >= data->a)
+    {
+        buff = *cur;
+        *cur = last;
+        last = buff;
+        cur--;
+    }
+    *data->a_head = last;
+    write(1, "rra\n", 4);
+	/*data->a_head = data->a_root;
 	if (data->a_root + 1 > &data->a[data->size_a - 1])
 		data->a_root = data->a;
 	else
 		data->a_root = data->a_root + 1;
-	write(1, "rra\n", 4);
+	write(1, "rra\n", 4);*/
 }
 
 void	sb(t_data *data)
@@ -312,8 +475,11 @@ void	ft_renum(int *a1, int *a, int size)
 		j = 0;
 		while (j < size)
 		{
-			if (a1[i] == a[j])
-				a[j] = i + 1;
+			if (a[i] == a1[j])
+            {
+                a[i] = j + 1;
+                break;
+            }
 			j++;
 		}
 		i++;
@@ -369,8 +535,8 @@ void	ft_sort(int *a, int size)
 			if (a[j] < a[i])
 			{
 				b = a[i];
-				a[j] = a[i];
-				a[i] = b;
+				a[i] = a[j];
+				a[j] = b;
 			}
 			j++;
 		}

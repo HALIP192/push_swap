@@ -1,4 +1,4 @@
-/* ************************************************************************** */
+ /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   push_swap.c                                        :+:      :+:    :+:   */
@@ -23,8 +23,8 @@ static void	start_check(t_data *data)
 {
 	if (is_sorted(data->a, data->size_a) || data->size_a == 1)
 		return ;
-	data->b_head = data->b;
-	data->b_root = data->b;
+	data->b_head = NULL;
+	data->b_root = NULL;
 	printf("%d\n", data->size_a);
 	if (data->size_a == 2)
 		ra(data);
