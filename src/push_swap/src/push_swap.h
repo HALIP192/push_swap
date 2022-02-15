@@ -6,7 +6,7 @@
 /*   By: ntitan <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/04 19:16:14 by ntitan            #+#    #+#             */
-/*   Updated: 2022/02/14 01:49:41 by ntitan           ###   ########.fr       */
+/*   Updated: 2022/02/14 23:51:30 by ntitan           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,7 @@ typedef struct s_data
 	int	*b_root;
 }t_data;
 
+int		malloc_error(t_data *data, int *a1);
 int		ft_atoi(char *mas);
 int		main(int argc, char **argv);
 void	back_a(t_data *data);

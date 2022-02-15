@@ -6,7 +6,7 @@
 /*   By: ntitan <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/04 19:19:38 by ntitan            #+#    #+#             */
-/*   Updated: 2022/02/14 00:27:05 by ntitan           ###   ########.fr       */
+/*   Updated: 2022/02/15 14:32:02 by ntitan           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -139,9 +139,10 @@ void	sort3_forA(t_data *data)
 			rra(data);
 		}
 		else if (*(data->a_head - 1) < *data->a_root)
-			sa(data);
-		else
-			ra(data);
+        {
+            sa(data);
+            ra(data);
+        }
 	}
 	else if (*data->a_head > *data->a_root)
 		rra(data);
@@ -155,8 +156,8 @@ void	sort3_forA(t_data *data)
 void sort_from3TO5(t_data *data)
 {
 	int i = 0;
-	while (i < data->size_a)
-		printf("%d\n", data->a[i++]);
+	/*while (i < data->size_a)
+		printf("%d\n", data->a[i++]);*/
 	if (data->size_a == 3)
 		return (sort3_forA(data));
 	while (data->size_a > 3)
@@ -165,7 +166,8 @@ void sort_from3TO5(t_data *data)
 	//write(1, "\n", 1);
 	while (data->size_b > 0)
 	{
-		if (*data->b_head < *data->a_root)
+        //need rewrite
+		if (*data->b_head > *data->a_root && *data)
 		{
 			while (*data->b_head > *data->a_head)
 				ra(data);
@@ -180,8 +182,9 @@ void sort_from3TO5(t_data *data)
 		}
 	}
 	i = 0;
-	while (i < data->size_a)
-		printf("%d\n", data->a[i++]);
+    //
+/*	while (i < data->size_a)
+		printf("%d\n", data->a[i++]);*/
 }
 
 void	shift_topush(t_data *data, int choose)
