@@ -138,19 +138,54 @@ void	sort3_forA(t_data *data)
 			sa(data);
 			rra(data);
 		}
-		else if (*(data->a_head - 1) < *data->a_root)
-        {
+		else if (*data->a_head < *data->a_root)
             sa(data);
+        else
             ra(data);
-        }
 	}
 	else if (*data->a_head > *data->a_root)
 		rra(data);
 	else
 	{
+        rra(data);
 		sa(data);
-		ra(data);
 	}
+}
+
+static void push_to_a(t_data *data)
+{
+    int i;
+    int cnt;
+
+    i = data->size_a - 1;
+    cnt = 0;
+    while (i >= 0)
+    {
+        if (data->a[i] > *data->b_head)
+            break;
+        i--;
+        cnt++;
+    }
+    if (cnt > data->size_a / 2)
+    {
+        i = (cnt - data->size_a) * (-1);
+        while (i--)
+            rra(data);
+        pa(data);
+        i = (cnt - data->size_a) * (-1);
+        while (i--)
+            ra(data);
+    }
+    else
+    {
+        i = cnt;
+        while (i--)
+            ra(data);
+        pa(data);
+        i = 0;
+        while (i++ != cnt)
+            rra(data);
+    }
 }
 
 void sort_from3TO5(t_data *data)
@@ -166,23 +201,23 @@ void sort_from3TO5(t_data *data)
 	//write(1, "\n", 1);
 	while (data->size_b > 0)
 	{
-        //need rewrite
-		if (*data->b_head > *data->a_root && *data)
-		{
-			while (*data->b_head > *data->a_head)
-				ra(data);
-			pa(data);
-			while (*data->a_head > *data->a_root)
-				rra(data);
-		}
-		else
-		{
-			pa(data);
-			ra(data);
-		}
+		if (*data->b_head > *data->a_root)
+        {
+            pa(data);
+            ra(data);
+        }
+        else if (*data->b_head < *data->a_head)
+            pa(data);
+        else
+        {
+            /*while (*data->b_head > *data->a_head)
+                ra(data);
+            pa(data);
+            while (*data->a_head > *data->a_root)
+                rra(data);*/
+            push_to_a(data);
+        }
 	}
-	i = 0;
-    //
 /*	while (i < data->size_a)
 		printf("%d\n", data->a[i++]);*/
 }
@@ -459,7 +494,7 @@ int		is_sorted(int *a, int size)
 	i = 0;
 	while (i < size - 1)
 	{
-		if (a[i] >= a[i + 1])
+		if (a[i] < a[i + 1])
 			return (0);
 		i++;
 	}

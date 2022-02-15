@@ -40,6 +40,7 @@ static void	start_check(t_data *data)
 		sort_from3TO5(data);
 	else
 		sort_all(data);
+    free_data(data);
 }	
 
 static int	check_ligit(t_data *data, int *a1)
