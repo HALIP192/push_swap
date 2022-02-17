@@ -14,8 +14,22 @@
 
 void	back_a(t_data *data)
 {
-	while (*data->b_head != data->size_b)
-		rrb(data);
+    int i;
+    int buf;
+
+    if (!is_sorted(data->b, data->size_b))
+    {
+        i = ft_max(data->b, data->size_b);
+        if (i >= data->size_b / 2  && i != 0)
+        {
+            buf = (i - data->size_b) * (-1);
+            while (buf-- > 0)
+                rb(data);
+        }
+        else if (i != 0)
+            while (i--)
+                rrb(data);
+    }
 	while (data->size_b)
 		pa(data);
 }
@@ -33,35 +47,39 @@ int    ft_max(int *mas, int size)
             max = i;
         i++;
     }
-    return (max);
+    return (max + 1);
 }
 
 void	check_b(t_data *data, int num) {
     int i;
     int buf;
+    int max;
 
     i = 0;
+    max = -1;
+    if (data->size_b < 2)
+        return ;
     while (i < data->size_b) {
-        if (data->b[i] > num)
-            break;
+        if (data->b[i] > num && (max == -1 || data->b[max] > data->b[i]))
+            max = i;
         i++;
     }
-    if (i >= data->size_b / 2 && i != data->size_b)
+    if (max >= data->size_b / 2 && max != data->size_b)
     {
-        buf = (i - data->size_b) * (-1);
+        buf = (max - data->size_b) * (-1);
         while (buf--)
             rb(data);
     }
-    else if (i != data->size_b)
-        while (i--)
+    else if (max != -1)
+        while (max--)
             rrb(data);
-    else if (i == data->size_b)
+    else if (max == -1)
     {
         i = ft_max(data->b, data->size_b);
         if (i >= data->size_b / 2  && i != 0)
         {
             buf = (i - data->size_b) * (-1);
-            while (buf--)
+            while (buf-- > 0)
                 rb(data);
         }
         else if (i != 0)
@@ -107,7 +125,7 @@ void	sort_all(t_data *data)
 	int	*hold;
 	int	headChunk;
 
-	numsofchunks = (data->size_a + data->size_b) / 3;
+	numsofchunks = (data->size_a + data->size_b) / 3 + ((data->size_a + data->size_b) % 3 != 0);
 	headChunk = 1;
 	while (headChunk <= numsofchunks)
 	{
@@ -411,7 +429,7 @@ void	rrb(t_data *data)
         cur--;
     }
     *data->b_head = last;
-    write(1, "rrb\b", 4);
+    write(1, "rrb\n", 4);
 	/*if (data->size_b == 0)
 		return ;
 	data->b_head = data->b_root;
