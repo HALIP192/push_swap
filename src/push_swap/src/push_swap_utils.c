@@ -6,7 +6,7 @@
 /*   By: ntitan <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/04 19:19:38 by ntitan            #+#    #+#             */
-/*   Updated: 2022/02/15 14:32:02 by ntitan           ###   ########.fr       */
+/*   Updated: 2022/02/18 15:04:12 by ntitan           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -125,7 +125,7 @@ void	sort_all(t_data *data)
 	int	*hold;
 	int	headChunk;
 
-	numsofchunks = (data->size_a + data->size_b) / 3 + ((data->size_a + data->size_b) % 3 != 0);
+	numsofchunks = (data->size_a + data->size_b) / 3;
 	headChunk = 1;
 	while (headChunk <= numsofchunks)
 	{
@@ -141,6 +141,11 @@ void	sort_all(t_data *data)
 		check_b(data, *data->a_head);
 		pb(data);
 		free(hold);
+	}
+	while (data->size_a != 0)
+	{
+		check_b(data, *data->a_head);
+		pb(data);
 	}
 	back_a(data);
 }
